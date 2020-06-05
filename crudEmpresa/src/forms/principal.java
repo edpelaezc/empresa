@@ -90,14 +90,57 @@ public class principal extends javax.swing.JFrame {
             pst.setString(5, strn);
             pst.execute();
             
-            JOptionPane.showMessageDialog(null, "dato modificado");
+            JOptionPane.showMessageDialog(null, "Actualizado");
             
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error" + e.getMessage());
         }
     }
+        
+    public void delete(){
+        int selected = results.getSelectedRow();  
+        
+        try {
+            String SQL = "delete from empresa where id=" + results.getValueAt(selected, 0);
+            java.sql.Statement st = cn.createStatement();
+            int n = st.executeUpdate(SQL);
+            
+            if (n >= 0) {
+                JOptionPane.showMessageDialog(null, "Eliminado");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error" + e.getMessage());
+        }
+    }
+        
     
-    
+    public void search(String value){
+        String[] columns = {"ID", "Nombre", "NIT", "Fecha fundacion", "Direccion"};
+        String[] tupla = new String[5];
+        
+        DefaultTableModel model = new DefaultTableModel(null, columns);
+        String SQL = "select * from empresa where nombre like '%"+ value + "%'";
+        
+        try {
+            java.sql.Statement st = cn.createStatement();
+            java.sql.ResultSet rs = st.executeQuery(SQL);
+            
+            while (rs.next()) {                
+                tupla[0] = rs.getString("id");                
+                tupla[1] = rs.getString("nombre");
+                tupla[2] = rs.getString("NIT");
+                tupla[3] = rs.getString("fundacion");
+                tupla[4] = rs.getString("direccion");               
+                
+                model.addRow(tupla);
+            }        
+            
+            results.setModel(model);
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error" + e.getMessage());
+        }        
+    }
     
     public principal() {
         initComponents();
@@ -126,7 +169,7 @@ public class principal extends javax.swing.JFrame {
         btnDelete = new javax.swing.JButton();
         btnUpdate = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
-        btnRead = new javax.swing.JTextField();
+        txtBuscar = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         results = new javax.swing.JTable();
 
@@ -148,6 +191,11 @@ public class principal extends javax.swing.JFrame {
         });
 
         btnDelete.setText("Eliminar");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         btnUpdate.setText("Actualizar");
         btnUpdate.addActionListener(new java.awt.event.ActionListener() {
@@ -157,6 +205,12 @@ public class principal extends javax.swing.JFrame {
         });
 
         jLabel5.setText("Buscar");
+
+        txtBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBuscarKeyReleased(evt);
+            }
+        });
 
         results.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -207,7 +261,7 @@ public class principal extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnRead, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(28, Short.MAX_VALUE))
         );
@@ -219,7 +273,7 @@ public class principal extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5)
-                    .addComponent(btnRead, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -267,6 +321,16 @@ public class principal extends javax.swing.JFrame {
         read();
     }//GEN-LAST:event_btnUpdateActionPerformed
 
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        delete();
+        read();
+        limpiarTxt();
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void txtBuscarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscarKeyReleased
+        search(txtBuscar.getText());
+    }//GEN-LAST:event_txtBuscarKeyReleased
+
     /**
      * @param args the command line arguments
      */
@@ -304,7 +368,6 @@ public class principal extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDelete;
-    private javax.swing.JTextField btnRead;
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JLabel jLabel1;
@@ -314,6 +377,7 @@ public class principal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable results;
+    private javax.swing.JTextField txtBuscar;
     private javax.swing.JTextField txtDireccion;
     private javax.swing.JTextField txtFundacion;
     private javax.swing.JTextField txtNIT;
