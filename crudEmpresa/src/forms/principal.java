@@ -5,17 +5,78 @@
  */
 package forms;
 
+import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.PreparedStatement;
+import com.mysql.jdbc.Statement;
+import database.database;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author edanP
  */
 public class principal extends javax.swing.JFrame {
 
-    /**
-     * Creates new form principal
-     */
+    database instancia = new database();
+    Connection cn = instancia.connection();
+    
+    public void limpiarTxt(){
+        txtNombre.setText("");
+        txtNIT.setText("");
+        txtFundacion.setText("");
+        txtDireccion.setText("");
+    }
+    
+    public void create(){
+        try {
+            String SQL = "insert into empresa (nombre, NIT, fundacion, direccion) values (?,?,?,?)";
+            java.sql.PreparedStatement pst = cn.prepareStatement(SQL);
+            
+            pst.setString(1, txtNombre.getText());
+            pst.setString(2, txtNIT.getText());
+            pst.setString(3, txtFundacion.getText());
+            pst.setString(4, txtDireccion.getText());
+            pst.execute();
+            
+            JOptionPane.showMessageDialog(null, "Inserción exitosa");
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error" + e.getMessage());
+        }
+    }
+    
+    public void read(){
+        String[] columns = {"ID", "Nombre", "NIT", "Fecha fundacion", "Direccion"};
+        String[] tupla = new String[5];
+        
+        DefaultTableModel model = new DefaultTableModel(null, columns);
+        String SQL = "select * from empresa";
+        
+        try {
+            java.sql.Statement st = cn.createStatement();
+            java.sql.ResultSet rs = st.executeQuery(SQL);
+            
+            while (rs.next()) {                
+                tupla[0] = rs.getString("id");                
+                tupla[1] = rs.getString("nombre");
+                tupla[2] = rs.getString("NIT");
+                tupla[3] = rs.getString("fundacion");
+                tupla[4] = rs.getString("direccion");               
+                
+                model.addRow(tupla);
+            }        
+            
+            results.setModel(model);
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error" + e.getMessage());
+        }
+    }
+    
     public principal() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        read();
     }
 
     /**
@@ -35,7 +96,6 @@ public class principal extends javax.swing.JFrame {
         txtFundacion = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         txtDireccion = new javax.swing.JTextField();
-        btnCreate = new javax.swing.JButton();
         btnSave = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnUpdate = new javax.swing.JButton();
@@ -54,9 +114,12 @@ public class principal extends javax.swing.JFrame {
 
         jLabel4.setText("Dirección");
 
-        btnCreate.setText("Nuevo");
-
-        btnSave.setText("Guardar");
+        btnSave.setText("Nuevo");
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
 
         btnDelete.setText("Eliminar");
 
@@ -66,13 +129,13 @@ public class principal extends javax.swing.JFrame {
 
         results.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {},
+                {},
+                {},
+                {}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+
             }
         ));
         jScrollPane1.setViewportView(results);
@@ -97,8 +160,7 @@ public class principal extends javax.swing.JFrame {
                             .addComponent(txtFundacion)
                             .addComponent(txtDireccion)))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnCreate)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(69, 69, 69)
                         .addComponent(btnSave)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnDelete)
@@ -138,7 +200,6 @@ public class principal extends javax.swing.JFrame {
                             .addComponent(txtDireccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(48, 48, 48)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnCreate)
                             .addComponent(btnSave)
                             .addComponent(btnDelete)
                             .addComponent(btnUpdate)))
@@ -148,6 +209,12 @@ public class principal extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        create();
+        limpiarTxt();
+        read();
+    }//GEN-LAST:event_btnSaveActionPerformed
 
     /**
      * @param args the command line arguments
@@ -185,7 +252,6 @@ public class principal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCreate;
     private javax.swing.JButton btnDelete;
     private javax.swing.JTextField btnRead;
     private javax.swing.JButton btnSave;
