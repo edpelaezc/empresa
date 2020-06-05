@@ -73,6 +73,32 @@ public class principal extends javax.swing.JFrame {
         }
     }
     
+    
+        public void update(){
+        try {
+            String SQL = "update empresa set nombre=?, NIT=?, fundacion=?, direccion=? where id=?";                        
+            int selected = results.getSelectedRow();            
+            String strn = (String) results.getValueAt(selected, 0);
+            
+            java.sql.PreparedStatement pst = cn.prepareStatement(SQL);
+            
+            pst.setString(1, txtNombre.getText());
+            pst.setString(2, txtNIT.getText());
+            pst.setString(3, txtFundacion.getText());
+            pst.setString(4, txtDireccion.getText());
+            
+            pst.setString(5, strn);
+            pst.execute();
+            
+            JOptionPane.showMessageDialog(null, "dato modificado");
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error" + e.getMessage());
+        }
+    }
+    
+    
+    
     public principal() {
         initComponents();
         this.setLocationRelativeTo(null);
@@ -124,6 +150,11 @@ public class principal extends javax.swing.JFrame {
         btnDelete.setText("Eliminar");
 
         btnUpdate.setText("Actualizar");
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
 
         jLabel5.setText("Buscar");
 
@@ -138,6 +169,11 @@ public class principal extends javax.swing.JFrame {
 
             }
         ));
+        results.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                resultsMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(results);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -215,6 +251,21 @@ public class principal extends javax.swing.JFrame {
         limpiarTxt();
         read();
     }//GEN-LAST:event_btnSaveActionPerformed
+
+    private void resultsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_resultsMouseClicked
+        int selected = results.rowAtPoint(evt.getPoint());
+        
+        txtNombre.setText(results.getValueAt(selected, 1).toString());
+        txtNIT.setText(results.getValueAt(selected, 2).toString());
+        txtFundacion.setText(results.getValueAt(selected, 3).toString());
+        txtDireccion.setText(results.getValueAt(selected, 4).toString());
+    }//GEN-LAST:event_resultsMouseClicked
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        update();
+        limpiarTxt();
+        read();
+    }//GEN-LAST:event_btnUpdateActionPerformed
 
     /**
      * @param args the command line arguments
