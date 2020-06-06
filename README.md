@@ -1,5 +1,5 @@
 # empresa
-Activar apache y mysql en XAMPP. Importar base de datos en php admin, admin mysql.
+Activar apache y mysql en XAMPP. Importar base de datos en php admin al dar click en admin mysql.
 
 
 Ejecutar el archivo principal.java
